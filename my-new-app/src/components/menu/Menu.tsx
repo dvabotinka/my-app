@@ -1,6 +1,6 @@
 import { inject, observer } from "mobx-react";
 import { Component } from "react";
-import { Root } from "../store";
+import { Root } from "../../store/menu";
 import 'antd/dist/reset.css';
 import { 
   Button, 
@@ -99,7 +99,7 @@ class MenuComponent extends Component<
 
     return (
       <div>
-        <h1>{rootTree.menu.name}</h1>
+        <h1>Menu</h1>
         <Form 
           color="red"
           labelCol={{ span: 8 }}

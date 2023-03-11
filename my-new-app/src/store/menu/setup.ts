@@ -4,8 +4,6 @@ import { RootModel } from "."
 export const setupRootStore = () => {
   const rootTree = RootModel.create({
     menu: {
-      id: "1",
-      name: "Add item data",
       items: []
     },
   });

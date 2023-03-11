@@ -9,8 +9,6 @@ const ItemModel = types.model("Item", {
 });
 
 const MenuModel = types.model("Menu", {
-  id: types.identifier,
-  name: types.string,
   items: types.array(ItemModel)
 })
 .actions(self => {
