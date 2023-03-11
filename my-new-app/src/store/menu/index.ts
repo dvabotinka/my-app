@@ -19,7 +19,15 @@ const MenuModel = types.model("Menu", {
       items: [{ id, name, title, description }, ...self.items]
     });
   }
-  return { newItem };
+  
+  function setItems(items: Array<Item>) {
+    applySnapshot(self, {
+      ...self,
+      items: items
+    });
+  }
+
+  return { newItem, setItems };
 });
 
 const RootModel = types.model("Root", {
