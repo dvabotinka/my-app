@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Item } from "../store";
+import { Item } from "../../store/menu";
 import { observer } from "mobx-react";
 import 'antd/dist/reset.css';
 import { Table } from 'antd';
