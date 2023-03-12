@@ -28,8 +28,7 @@ interface MenuComponentState {
 class MenuComponent extends Component<
   MenuComponentProps, 
   MenuComponentState> 
-  {
-
+{
   constructor(props: MenuComponentProps) {
     super(props);
     this.state = {
@@ -176,14 +175,14 @@ class MenuComponent extends Component<
             </Input>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button 
-              block 
-              type='primary' 
-              htmlType="submit" 
-              onClick={ this.onSubmit }
-            >
-              Submit
-          </Button>
+            <Button 
+                block 
+                type='primary' 
+                htmlType="submit" 
+                onClick={ this.onSubmit }
+              >
+                Submit
+            </Button>
           </Form.Item>
         </Form>
         <Table dataSource={dataSource} columns={columns} rowKey="id" />
