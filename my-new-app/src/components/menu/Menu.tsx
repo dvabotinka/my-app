@@ -79,8 +79,6 @@ class MenuComponent extends Component<
   }
 
   onSubmit = (e: any) => {
-    e.preventDefault();
-
     const { itemName, itemTitle, itemDescription } = this.state;
     const { rootTree } = this.props;
     
@@ -137,10 +135,12 @@ class MenuComponent extends Component<
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           style={{ maxWidth: 600 }}
+          onFinish={this.onSubmit}
         >
           <Form.Item 
             label="Name" 
             name="name"
+            rules={[{ required: true, message: 'Please, input name' }]}
           >
             <Input 
               allowClear
@@ -153,6 +153,7 @@ class MenuComponent extends Component<
           <Form.Item 
             label="Title" 
             name="title"
+            rules={[{ required: true, message: 'Please, input title' }]}
           >
             <Input
               allowClear
@@ -165,6 +166,7 @@ class MenuComponent extends Component<
           <Form.Item 
             label="Description" 
             name="description"
+            rules={[{ required: true, message: 'Please, input description' }]}
           >
             <Input
               allowClear
@@ -179,7 +181,6 @@ class MenuComponent extends Component<
                 block 
                 type='primary' 
                 htmlType="submit" 
-                onClick={ this.onSubmit }
               >
                 Submit
             </Button>

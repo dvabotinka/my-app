@@ -2,16 +2,6 @@
   text-align: center;
 }
 
-.App-header {
-  background-color: #6abbe0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  color: rgb(255, 255, 255);
-}
-
 .App-main {
   background-color: #6abbe0;
   min-height: 100vh;
