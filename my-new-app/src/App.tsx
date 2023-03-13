@@ -1,10 +1,11 @@
 import './App.css';
 import { Component } from "react";
 import { setupRootStore } from "./store/menu/setup";
-import { Provider } from "mobx-react";
 import { MenuComponent } from './components/menu/Menu';
 import { LoginComponent } from './components/auth/Login';
 import { setupAuthRootStore } from './store/auth/setup';
+import { HeaderComponent } from './components/header/Header';
+import { Route, Routes } from 'react-router-dom';
 
 interface Props {}
 
@@ -36,15 +37,19 @@ class App extends Component<Props, State>
 
     return (
       <div className="App">
-      <header className="App-header">
-      <Provider authRootTree={authRootTree}>
-          <LoginComponent authRootTree={authRootTree} />
-        </Provider>
-      </header>
-      <main className='App-main'>
-      <Provider rootTree={rootTree}>
-          <MenuComponent rootTree={rootTree} />
-        </Provider>
+      <HeaderComponent></HeaderComponent>
+      <main className="App-main">
+        <Routes>
+          <Route path='/' element={
+            <div><h1>Prutean Stanislav CR-203</h1></div>
+          } />
+          <Route path='/login' element={
+            <LoginComponent authRootTree={authRootTree} /> } 
+          />
+          <Route path='/menu' element={
+            <MenuComponent rootTree={rootTree} /> } 
+          />
+        </Routes>
       </main>
     </div>
     );
