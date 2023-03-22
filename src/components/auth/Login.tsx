@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState } from "react";
 import { AuthRoot, UserLogin } from "../../store/auth";
 import 'antd/dist/reset.css';
 import { 
@@ -12,41 +12,23 @@ interface LoginComponentProps {
   authRootTree?: AuthRoot
 }
 
-interface LoginComponentState {
-  userLogin: string,
-  userPassword: string
-}
-
-class LoginComponent extends Component<
-  LoginComponentProps,
-  LoginComponentState>
-{
-  constructor(props: LoginComponentProps) {
-    super(props);
-    this.state = {
-      userLogin: '',
-      userPassword: ''
-    }
-  }
-
-  componentDidMount() {
-    const { authRootTree } = this.props;
-    if(!authRootTree) return null;
-
+const LoginComponent: React.FC<LoginComponentProps> = ({ authRootTree }) => { 
+  const [userLogin, setUserLogin] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  
+  if (authRootTree) {
     localStorage.setItem('Login', JSON.stringify([...authRootTree.login.users]));
   }
 
-  changeUserLogin = (e: any) => {
-    const userLogin = e.target.value;
-    this.setState({ userLogin });
+  function changeUserLogin(e: any) {
+    setUserLogin(e.target.value);
   }
 
-  changeUserPassword = (e: any) => {
-    const userPassword = e.target.value;
-    this.setState({ userPassword });
+  function changeUserPassword(e: any) {
+    setUserPassword(e.target.value);
   }
 
-  onLogin = (e: any) => {
+  function onLogin() {
     const login = localStorage.getItem('Login');
     const users = login ? JSON.parse(login) : [];
   
@@ -67,8 +49,6 @@ class LoginComponent extends Component<
 
       return;
     }
-
-    const { userLogin, userPassword } = this.state;
 
     const user = users.find((u: UserLogin) => 
       u.login === userLogin && 
@@ -105,63 +85,56 @@ class LoginComponent extends Component<
         duration: 2,
       });
     }, 1000);
-  }
-
-  render() {
-    const { authRootTree } = this.props;
-    const { userLogin, userPassword } = this.state;
-
-    if (!authRootTree) return null;
-
-    return (
-      <div>
-        <h1>Authorization</h1>
-        <Form
-          color="red"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          style={{ maxWidth: 600 }}
-          onFinish={this.onLogin}
+  };
+  
+  return (
+    <div>
+      <h1>Authorization</h1>
+      <Form
+        color="red"
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        style={{ maxWidth: 600 }}
+        onFinish={onLogin}
+      >
+        <Form.Item 
+          label="Login" 
+          name="login"
+          rules={[{ required: true, message: 'Please, input your login' }]}
         >
-          <Form.Item 
-            label="Login" 
-            name="login"
-            rules={[{ required: true, message: 'Please, input your login' }]}
+          <Input 
+            allowClear
+            placeholder="input login" 
+            value={userLogin} 
+            onChange={changeUserLogin} 
           >
-            <Input 
-              allowClear
-              placeholder="input login" 
-              value={userLogin} 
-              onChange={this.changeUserLogin} 
-            >
-            </Input>
-          </Form.Item>
-          <Form.Item 
-            label="Password" 
-            name="password"
-            rules={[{ required: true, message: 'Please, input your password' }]}
+          </Input>
+        </Form.Item>
+        <Form.Item 
+          label="Password" 
+          name="password"
+          rules={[{ required: true, message: 'Please, input your password' }]}
+        >
+          <Input 
+            allowClear
+            placeholder="input password" 
+            value={userPassword} 
+            onChange={changeUserPassword} 
           >
-            <Input 
-              allowClear
-              placeholder="input password" 
-              value={userPassword} 
-              onChange={this.changeUserPassword} 
+          </Input>
+        </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button 
+              block 
+              type='primary' 
+              htmlType="submit" 
             >
-            </Input>
-          </Form.Item>
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button 
-                block 
-                type='primary' 
-                htmlType="submit" 
-              >
-                Submit
-            </Button>
-          </Form.Item>
-        </Form>
-      </div>
-    )
-  }
-}
+              Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
+  );
+};
 
 export { LoginComponent };
