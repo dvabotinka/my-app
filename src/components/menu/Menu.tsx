@@ -1,5 +1,4 @@
-import { inject, observer } from "mobx-react";
-import { Component } from "react";
+import { useEffect, useState } from "react";
 import { Item, Root } from "../../store/menu";
 import 'antd/dist/reset.css';
 import { 
@@ -15,45 +14,29 @@ interface MenuComponentProps {
   rootTree?: Root
 }
 
-interface MenuComponentState {
-  itemName: string,
-  itemTitle: string,
-  itemDescription: string,
-  menuData: Item[],
-  loading: boolean
-}
+const MenuComponent: React.FC<MenuComponentProps> = ({ rootTree }) =>  {
+  const [itemName, setItemName] = useState("");
+  const [itemTitle, setItemTitle] = useState("");
+  const [itemDescription, setItemDescription] = useState("");
+  const [menuData, setMenuData] = useState<Item[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-@inject("rootTree")
-@observer
-class MenuComponent extends Component<
-  MenuComponentProps, 
-  MenuComponentState> 
-{
-  constructor(props: MenuComponentProps) {
-    super(props);
-    this.state = {
-      itemName: '',
-      itemTitle: '',
-      itemDescription: '',
-      menuData: [],
-      loading: true
-    };
-  }
+  useEffect(() => {
+    async function fetchData() {
+      if (!rootTree) return <Spin size="large" />;
 
-  async componentDidMount() {
-    const { rootTree } = this.props;
-    if (!rootTree) return <Spin size="large" />;
-    
-    this.setState({ loading: true });
+      setLoading(true);
 
-    const items = await this.getItemsFromLocalStorage();
-    rootTree.menu.setItems(items);
-    this.setState({ menuData: [...rootTree.menu.items] });
+      const items = await getItemsFromLocalStorage();
+      rootTree.menu.setItems(items);
+      setMenuData([...rootTree.menu.items]);
 
-    this.setState({ loading: false });
-  }
+      setLoading(false);
+    }
+    fetchData();
+  }, [rootTree]);
 
-  async getItemsFromLocalStorage(): Promise<Item[]> {
+  async function getItemsFromLocalStorage(): Promise<Item[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const menu = localStorage.getItem('Menu');
@@ -63,30 +46,24 @@ class MenuComponent extends Component<
     });
   }
 
-  changeItemName = (e: any) => {
-    const itemName = e.target.value;
-    this.setState({ itemName });
+  function changeItemName(e: any) {
+    setItemName(e.target.value);
   }
 
-  changeItemTitle = (e: any) => {
-    const itemTitle = e.target.value;
-    this.setState({ itemTitle });
+  function changeItemTitle(e: any) {
+    setItemTitle(e.target.value);
   }
 
-  changeItemDescription = (e: any) => {
-    const itemDescription = e.target.value;
-    this.setState({ itemDescription });
+  function changeItemDescription(e: any) {
+    setItemDescription(e.target.value);
   }
 
-  onSubmit = (e: any) => {
-    const { itemName, itemTitle, itemDescription } = this.state;
-    const { rootTree } = this.props;
-    
-    if(!rootTree) return null;
+  function onSubmit() {
+    if (!rootTree) return null;
 
     rootTree.menu.newItem(itemName, itemTitle, itemDescription);
-    
-    this.setState({ menuData: [...rootTree.menu.items] });
+
+    setMenuData([...rootTree.menu.items]);
 
     localStorage.setItem('Menu', JSON.stringify([...rootTree.menu.items]));
 
@@ -95,101 +72,94 @@ class MenuComponent extends Component<
     }, 300);
   }
 
-  render() {
-    const { rootTree } = this.props;
-    const { itemName, itemTitle, itemDescription } = this.state;
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+    }
+  ];
 
-    if (!rootTree) return null;
+  const dataSource = menuData.map((item) => ({
+    id: item.id,
+    name: item.name,
+    title: item.title,
+    description: item.description
+  }));
 
-    const columns = [
-      {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
-      },
-      {
-        title: 'Title',
-        dataIndex: 'title',
-        key: 'title',
-      },
-      {
-        title: 'Description',
-        dataIndex: 'description',
-        key: 'description',
-      }
-    ];
-
-    const dataSource = this.state.menuData.map((item) => ({
-      id: item.id,
-      name: item.name,
-      title: item.title,
-      description: item.description
-    }));
-
-    return (
-      <div>
-        <Spin size="large" spinning={this.state.loading}></Spin>
-        <h1>Menu</h1>
-        <Form 
-          color="red"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          style={{ maxWidth: 600 }}
-          onFinish={this.onSubmit}
+  return (
+    <div>
+      <Spin size="large" spinning={loading}></Spin>
+      <h1>Menu</h1>
+      <Form 
+        color="red"
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        style={{ maxWidth: 600 }}
+        onFinish={onSubmit}
+      >
+        <Form.Item 
+          label="Name" 
+          name="name"
+          rules={[{ required: true, message: 'Please, input name' }]}
         >
-          <Form.Item 
-            label="Name" 
-            name="name"
-            rules={[{ required: true, message: 'Please, input name' }]}
+          <Input 
+            allowClear
+            placeholder="input name" 
+            value={itemName} 
+            onChange={changeItemName} 
           >
-            <Input 
-              allowClear
-              placeholder="input name" 
-              value={itemName} 
-              onChange={this.changeItemName} 
-            >
-            </Input>
-          </Form.Item>
-          <Form.Item 
-            label="Title" 
-            name="title"
-            rules={[{ required: true, message: 'Please, input title' }]}
+          </Input>
+        </Form.Item>
+        <Form.Item 
+          label="Title" 
+          name="title"
+          rules={[{ required: true, message: 'Please, input title' }]}
+        >
+          <Input
+            allowClear
+            placeholder="input title" 
+            value={itemTitle} 
+            onChange={changeItemTitle}
           >
-            <Input
-              allowClear
-              placeholder="input title" 
-              value={itemTitle} 
-              onChange={this.changeItemTitle}
-            >
-            </Input>
-          </Form.Item>
-          <Form.Item 
-            label="Description" 
-            name="description"
-            rules={[{ required: true, message: 'Please, input description' }]}
+          </Input>
+        </Form.Item>
+        <Form.Item 
+          label="Description" 
+          name="description"
+          rules={[{ required: true, message: 'Please, input description' }]}
+        >
+          <Input
+            allowClear
+            placeholder="input description" 
+            value={itemDescription} 
+            onChange={changeItemDescription}
           >
-            <Input
-              allowClear
-              placeholder="input description" 
-              value={itemDescription} 
-              onChange={this.changeItemDescription}
+          </Input>
+        </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button 
+              block 
+              type='primary' 
+              htmlType="submit" 
             >
-            </Input>
-          </Form.Item>
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button 
-                block 
-                type='primary' 
-                htmlType="submit" 
-              >
-                Submit
-            </Button>
-          </Form.Item>
-        </Form>
-        <Table dataSource={dataSource} columns={columns} rowKey="id" />
-      </div> 
-    );
-  }
-}
+              Submit
+          </Button>
+        </Form.Item>
+      </Form>
+      <Table dataSource={dataSource} columns={columns} rowKey="id" />
+    </div> 
+  );
+};
 
 export { MenuComponent };
